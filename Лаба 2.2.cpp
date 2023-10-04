@@ -13,6 +13,7 @@
 
 using namespace std;
 
+// Глобальные переменные для подсчета количества пластинок, сотрудников и заказов
 int numRecords, numEmployees, numOrders;
 
 // Класс для объекта "Виниловая пластинка"
@@ -38,6 +39,14 @@ public:
 
     // Метод для вывода информации о виниловой пластинке
     void outputVinylRecord();
+    // Метод для получения стоимости виниловой пластинки
+    float getPrice();
+    // Метод для получения названия виниловой пластинки
+    const string getAlbumName();
+    // Метод для получения исполнителя виниловой пластинки
+    const string getArtist();
+    // Метод для получения количества виниловой пластинки
+    int getQuantity();
 };
 
 // Функция для ввода информации о виниловой пластинке
@@ -77,6 +86,30 @@ void VinylRecord::outputVinylRecord()
     cout << "Цена: " << price << endl;
     cout << "Количество в наличии: " << quantity << endl;
     cout << endl;
+}
+
+// Определение метода для получения стоимости виниловой пластинке
+float VinylRecord::getPrice()
+{
+    return price;
+}
+
+// Определение метода для получения названия виниловой пластинки
+const string VinylRecord::getAlbumName()
+{
+    return albumName;
+}
+
+// Определение метода для получения исполнителя виниловой пластинки
+const string VinylRecord::getArtist()
+{
+    return artist;
+}
+
+// Определение для получения количества виниловой пластинки
+int VinylRecord::getQuantity()
+{
+    return quantity;
 }
 
 // Класс для объекта "Человек"
@@ -156,11 +189,7 @@ void inputCustomer(string* firstName, string* lastName, float* money, string* ad
 // Определение метода для вывода информации о клиенте
 void Customer::outputCustomer()
 {
-    cout << "Информация о клиенте:" << endl;
-    cout << "Имя: " << person.getFirstName() << " " << person.getLastName() << endl;
-    cout << "Количество денег: " << money << endl;
-    cout << "Адрес доставки: " << address << endl;
-    cout << endl;
+    cout << person.getFirstName() << " " << person.getLastName() << endl;
 }
 
 // Класс для объекта "Сотрудник магазина"
@@ -183,6 +212,15 @@ public:
 
     // Метод для вывода информации о сотруднике
     void outputEmployee();
+
+    // Метод для получения имени сотрудника
+    const string getFirstName();
+
+    // Метод для получения фамилии сотрудника
+    const string getLastName();
+
+    // Метод для получения должности сотрудника
+    const string getPosition();
 };
 
 // Функция для ввода информации о сотруднике магазина
@@ -213,6 +251,24 @@ void Employee::outputEmployee()
     cout << endl;
 }
 
+// Определение метода для получения имени сотрудника
+const string Employee::getFirstName()
+{
+    return person.getFirstName();
+}
+
+// Определение метода для получения фамилии сотрудника
+const string Employee::getLastName()
+{
+    return person.getLastName();
+}
+
+// Определение метода для получения должности сотрудника
+const string Employee::getPosition()
+{
+    return position;
+}
+
 // Класс для объекта "Заказ"
 class Order {
 private:
@@ -234,7 +290,24 @@ public:
         : orderNumber(number), orderDate(date), employee(emp), customer(cust), orderedRecord(record), quantityOrdered(quantity), totalCost(cost) {}
     // Деструктор
     ~Order() {}
+
+    // Метод для вывода информации о заказе
+    void outputOrder();
 };
+
+// Определение метода для вывода информации о заказе
+void Order::outputOrder()
+{
+    cout << "Номер заказа: " << orderNumber << endl;
+    cout << "Дата заказа: " << orderDate << endl;
+    cout << "Сотрудник магазина: " << employee.getFirstName() << " " << employee.getLastName() << " (" << employee.getPosition() << ")" << endl;
+    cout << "Клиент: ";
+    customer.outputCustomer();
+    cout << "Заказанная пластинка: " << orderedRecord.getAlbumName() << " - " << quantityOrdered << " шт." << endl;
+    cout << "Общая стоимость заказа: " << totalCost << endl;
+    cout << endl;
+
+}
 
 // Класс для объекта "Магазин"
 class Store {
@@ -273,6 +346,7 @@ void Store::outputStore()
     cout << "Информация о магазине:" << endl;
     cout << "Название: " << storeName << endl;
     cout << "Адрес: " << storeAddress << endl;
+    cout << endl;
 
     cout << "Информация о виниловых пластинках в магазине:" << endl;
     cout << endl;
@@ -282,6 +356,7 @@ void Store::outputStore()
     }
 
     cout << "Информация о сотрудниках магазина:" << endl;
+    cout << endl;
     for (int i = 0; i < numEmployees; ++i) {
         cout << "Сотрудник #" << i + 1 << ":" << endl;
         employeesInStore[i].outputEmployee();
@@ -352,7 +427,14 @@ int main()
     // Создаем магазин
     Store store1(name, address, vinylRecordsArray, employeeArray);
 
+    cout << "----------------------------------------" << endl;
+    cout << endl;
+
+    // Выводим информацию о магазине
     store1.outputStore();
+
+    cout << "----------------------------------------" << endl;
+    cout << endl;
 
     cout << "Введите количество заказов: ";
     cin >> numOrders;
@@ -360,23 +442,109 @@ int main()
     // Создаем массив указателей на объекты Order (массив динамических объектов)
     Order** ordersArray = new Order * [numOrders];
 
-    /*
-    // Объявление переменных для хранения данных о клиенте
-    string firstname, lastname, address;
-    float money;
+    // Ввод данных для каждого заказа
+    for (int i = 0; i < numOrders; ++i) {
+        cout << endl << "Заказ #" << i + 1 << ":" << endl;
 
-    // Вызов функции для ввода данных о клиенте
-    inputCustomer(&firstname, &lastname, &money, &address);
+        // Объявление переменных для хранения данных о заказе
+        int orderNumber;
+        string orderDate;
 
-    // Создание объекта класса Customer на основе введенных данных
-    Customer customer1(firstname, lastname, money, address);
+        // Ввод номера заказа и даты заказа
+        cout << "Введите номер заказа: ";
+        cin >> orderNumber;
+        cin.ignore();
 
-    customer1.outputCustomer();
-    */
+        cout << "Введите дату заказа: ";
+        getline(cin, orderDate);
+
+        // Показываем возможные варианты сотрудников для выбора
+        int employeeIndex;
+        bool isValidChoice = false;
+        
+        cout << "Выберите сотрудника, обслуживающего заказ:" << endl;
+
+        for (int i = 0; i < numEmployees; i++) {
+            cout << i + 1 << ". " << employeeArray[i].getFirstName() << " " << employeeArray[i].getLastName() << endl;
+        }
+
+        do {
+            int choice;
+            cin >> choice;
+
+            if (choice >= 1 && choice <= numEmployees) {
+                employeeIndex = choice - 1;
+                isValidChoice = true; // Устанавливаем флаг, если выбор сотрудника корректен
+            }
+            else {
+                cout << "Некорректный выбор." << endl;
+            }
+        } while (!isValidChoice); // Повторяем цикл, пока выбор не станет корректным
+
+        // Объявление переменных для хранения данных о клиенте
+        string clientFirstName, clientLastName, clientAddress;
+        float clientMoney;
+
+        // Ввод данных о клиенте
+        cout << "Введите информацию о клиенте, оформляющем заказ:" << endl;
+        inputCustomer(&clientFirstName, &clientLastName, &clientMoney, &clientAddress);
+
+        // Показываем возможные варианты виниловых пластинок для выбора
+        int vinylIndex;
+        isValidChoice = false;
+
+        cout << "Выберите виниловую пластинку для заказа:" << endl;
+
+        for (int i = 0; i < numRecords; i++) {
+            cout << i + 1 << ". " << vinylRecordsArray[i].getAlbumName() << " - " << vinylRecordsArray[i].getArtist() << " (" << vinylRecordsArray[i].getQuantity() << " шт." << ")" << endl;
+        }
+
+        do {
+            int choice;
+            cin >> choice;
+
+            if (choice >= 1 && choice <= numRecords) {
+                vinylIndex = choice - 1;
+                isValidChoice = true;
+            }
+            else {
+                cout << "Некорректный выбор." << endl;
+            }
+        } while (!isValidChoice);
+
+
+        // Ввод количества заказанных виниловых пластинок
+        int quantityOrdered;
+        cout << "Введите количество заказанных виниловых пластинок: ";
+        cin >> quantityOrdered;
+
+        // Рассчет общей стоимости заказа
+        float totalCost = vinylRecordsArray[vinylIndex].getPrice() * quantityOrdered;
+
+        // Создание объекта заказа и добавление его в массив указателей на заказы
+        ordersArray[i] = new Order(orderNumber, orderDate, employeeArray[employeeIndex], Customer(clientFirstName, clientLastName, clientMoney, clientAddress), vinylRecordsArray[vinylIndex], quantityOrdered, totalCost);
+    }
+
+    cout << endl;
+    cout << "----------------------------------------" << endl;
+
+    // Отображение информации о заказах
+    for (int i = 0; i < numOrders; ++i) {
+        cout << endl << "Информация о заказе #" << i + 1 << ":" << endl;
+        ordersArray[i]->outputOrder();
+    }
+
+    cout << "----------------------------------------" << endl;
+
+    // Освобождаем память, выделенную для каждого заказа
+    for (int i = 0; i < numOrders; ++i) {
+        delete ordersArray[i];
+    }
 
     // Освобождаем память, выделенную для массивов
     delete[] vinylRecordsArray;
     delete[] employeeArray;
+    delete[] ordersArray;
 
     return 0;
 }
